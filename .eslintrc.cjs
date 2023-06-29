@@ -3,14 +3,14 @@ module.exports = {
   // 指定react版本
   settings: {
     react: {
-      version: 'detect',
-    },
+      version: 'detect'
+    }
   },
   /* 提供预定义的全局变量 */
   env: {
     browser: true,
     es2021: true,
-    commonjs: true,
+    commonjs: true
   },
   /* 继承某些已有的规则 */
   extends: [
@@ -19,26 +19,25 @@ module.exports = {
     'plugin:react/recommended',
     'plugin:react/jsx-runtime',
     'plugin:react-hooks/recommended',
-    'prettier',
-    'plugin:prettier/recommended',
+    'prettier'
   ],
   overrides: [
     {
       env: {
-        node: true,
+        node: true
       },
       files: ['.eslintrc.{js,cjs}'],
       parserOptions: {
-        sourceType: 'script',
-      },
-    },
+        sourceType: 'script'
+      }
+    }
   ],
   /* 指定如何解析语法 */
   parser: '@typescript-eslint/parser',
   /* 优先级低于 parse 的语法解析配置 */
   parserOptions: {
     ecmaVersion: 'latest',
-    sourceType: 'module',
+    sourceType: 'module'
   },
   plugins: ['@typescript-eslint', 'react', 'react-hooks', 'prettier'],
   /*
@@ -71,6 +70,6 @@ module.exports = {
 
     // react (https://github.com/jsx-eslint/eslint-plugin-react)
     'react-hooks/rules-of-hooks': 'error',
-    'react-hooks/exhaustive-deps': 'warn',
-  },
+    'react-hooks/exhaustive-deps': 'warn'
+  }
 }

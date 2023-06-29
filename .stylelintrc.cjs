@@ -1,21 +1,24 @@
 module.exports = {
+  // 共享配置
   extends: [
     'stylelint-config-standard',
     'stylelint-config-prettier',
-    // 'stylelint-config-recommended-less',
-    'stylelint-config-recess-order',
+    'stylelint-config-recommended-less',
+    'stylelint-config-recess-order'
   ],
-  plugins: ['stylelint-order'],
-  // 不同格式的文件指定自定义语法
+
+  // 拓展插件
+  plugins: ['stylelint-less'],
+  // 指定要应用配置的文件子集
   overrides: [
     {
-      files: ['**/*.(less|css|html)'],
-      customSyntax: 'postcss-less',
+      files: '**/*.scss',
+      customSyntax: 'postcss-scss'
     },
     {
-      files: ['**/*.(html)'],
-      customSyntax: 'postcss-html',
-    },
+      files: ['**/*.(less|css)'],
+      customSyntax: 'postcss-less'
+    }
   ],
   ignoreFiles: [
     '**/*.js',
@@ -24,7 +27,14 @@ module.exports = {
     '**/*.ts',
     '**/*.json',
     '**/*.md',
-    '**/*.yaml',
+    '**/*.yaml'
   ],
-  rules: {},
-}
+  rules: {
+    'selector-pseudo-class-no-unknown': [
+      true,
+      {
+        ignorePseudoClasses: ['global']
+      }
+    ]
+  }
+};
