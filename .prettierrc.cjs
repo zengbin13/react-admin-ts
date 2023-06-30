@@ -1,6 +1,6 @@
 module.exports = {
   // 是否换行的字符数量, 默认为80
-  printWidth: 80,
+  printWidth: 160,
   // tab代表空格数, 默认为2
   tabWidth: 2,
   // 是否使用tab进行缩进，默认为false
@@ -13,4 +13,4 @@ module.exports = {
   trailingComma: 'none',
   // 对象大括号直接是否有空格，默认为true
   bracketSpacing: true
-}
+};

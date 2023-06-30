@@ -1,4 +1,6 @@
-import { Button, ConfigProvider, theme } from 'antd';
+import { ConfigProvider, theme } from 'antd';
+
+import Home from '@/pages/home/Home';
 
 function App() {
   const { token } = theme.useToken();
@@ -11,7 +13,7 @@ function App() {
         algorithm: theme.defaultAlgorithm
       }}
     >
-      <Button type="primary">按钮样式</Button>
+      <Home />
     </ConfigProvider>
   );
 }

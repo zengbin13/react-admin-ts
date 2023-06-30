@@ -99,9 +99,7 @@ function App() {
   const { token } = theme.useToken();
   const [color, setColor] = useState<string>(token.colorPrimary);
   // useState保存函数变量
-  const [algorithm, setAlgorithm] = useState<MappingAlgorithm>(
-    () => theme.defaultAlgorithm
-  );
+  const [algorithm, setAlgorithm] = useState<MappingAlgorithm>(() => theme.defaultAlgorithm);
 
   return (
     <ConfigProvider
@@ -114,22 +112,13 @@ function App() {
     >
       <section>
         <h2>主题色:</h2>
-        <ColorPicker
-          value={color}
-          onChange={(_, hex) => setColor(hex)}
-        ></ColorPicker>
+        <ColorPicker value={color} onChange={(_, hex) => setColor(hex)}></ColorPicker>
       </section>
       <section>
         <h2>颜色算法:</h2>
-        <Button onClick={() => setAlgorithm(() => theme.defaultAlgorithm)}>
-          默认算法
-        </Button>
-        <Button onClick={() => setAlgorithm(() => theme.darkAlgorithm)}>
-          暗色算法
-        </Button>
-        <Button onClick={() => setAlgorithm(() => theme.compactAlgorithm)}>
-          紧凑算法
-        </Button>
+        <Button onClick={() => setAlgorithm(() => theme.defaultAlgorithm)}>默认算法</Button>
+        <Button onClick={() => setAlgorithm(() => theme.darkAlgorithm)}>暗色算法</Button>
+        <Button onClick={() => setAlgorithm(() => theme.compactAlgorithm)}>紧凑算法</Button>
       </section>
       <Button type="primary">按钮样式</Button>
     </ConfigProvider>
@@ -160,11 +149,7 @@ module.exports = {
     browser: true,
     es2021: true
   },
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:react/recommended'
-  ],
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'plugin:react/recommended'],
   overrides: [
     {
       env: {
@@ -281,8 +266,15 @@ pnpm add -D prettier eslint-config-prettier eslint-plugin-prettier
   ],
   extends:[
     // 解决 eslint 和 prettier 的冲突 , 此项配置必须在最后
+	"plugin:prettier/recommended",
     "prettier",
-	"plugin:prettier/recommended"
+  ]
+}
+// eslint-config-prettier新版本只需一个prettier
+{
+  extends:[
+    // 在最后
+    'prettier',
   ]
 }
 ```
@@ -394,12 +386,7 @@ pnpm add -D postcss-less stylelint-less stylelint-config-recommended-less
 ```js
 module.exports = {
   // 共享配置
-  extends: [
-    'stylelint-config-standard',
-    'stylelint-config-prettier',
-    'stylelint-config-recommended-less',
-    'stylelint-config-recess-order'
-  ],
+  extends: ['stylelint-config-standard', 'stylelint-config-prettier', 'stylelint-config-recommended-less', 'stylelint-config-recess-order'],
 
   // 拓展插件
   plugins: ['stylelint-less'],
@@ -414,15 +401,7 @@ module.exports = {
       customSyntax: 'postcss-less'
     }
   ],
-  ignoreFiles: [
-    '**/*.js',
-    '**/*.jsx',
-    '**/*.tsx',
-    '**/*.ts',
-    '**/*.json',
-    '**/*.md',
-    '**/*.yaml'
-  ],
+  ignoreFiles: ['**/*.js', '**/*.jsx', '**/*.tsx', '**/*.ts', '**/*.json', '**/*.md', '**/*.yaml'],
   rules: {
     'selector-pseudo-class-no-unknown': [
       true,
@@ -532,9 +511,7 @@ pnpm add lint-staged -D
 // .lintstagedrc.cjs
 module.exports = {
   '*.{js,jsx,ts,tsx}': ['eslint --fix', 'prettier --write'],
-  '{!(package)*.json,*.code-snippets,.!(browserslist)*rc}': [
-    'prettier --write--parser json'
-  ],
+  '{!(package)*.json,*.code-snippets,.!(browserslist)*rc}': ['prettier --write--parser json'],
   'package.json': ['prettier --write'],
   '*.{scss,less,styl}': ['stylelint --fix', 'prettier --write'],
   '*.md': ['prettier --write']
@@ -547,7 +524,7 @@ module.exports = {
 pnpm husky add .husky/pre-commit "pnpm lint-staged"
 ```
 
-### 提交信息: commitlint
+### 提交信息: [commitlint](https://github.com/conventional-changelog/commitlint/#what-is-commitlint)
 
 | **类型** | **描述**                                               |
 | -------- | ------------------------------------------------------ |
@@ -581,10 +558,10 @@ module.exports = {
 添加 commit-msg 钩子
 
 ```bash
-pnpm husky add .husky/commit-msg 'pnpm --no-install commitlint --edit "$1"'
+npx husky add .husky/commit-msg 'npx --no-install commitlint --edit "$1"'
 ```
 
-#### 使用 cz-git
+#### 使用 [cz-git](https://cz-git.qbb.sh/zh/config/#%E7%BA%AF%E6%B1%89%E5%8C%96%E6%A8%A1%E6%9D%BF)
 
 ```bash
 # 管理员权限 可运行git cz
@@ -593,9 +570,10 @@ npm install -g commitizen
 pnpm add cz-git commitizen -D
 ```
 
-- #### `package.json` 添加 `config` 指定使用的适配器
+指定使用的适配器
 
 ```json
+// package.json
 {
   "config": {
     "commitizen": {
@@ -605,7 +583,241 @@ pnpm add cz-git commitizen -D
 }
 ```
 
-#### 创建`commitlint.config.js`
+添加自定义配置
 
-- `cz-git` 与 `commitlint` 进行联动给予校验信息
-- [详见](https://cz-git.qbb.sh/zh/config/#%E7%BA%AF%E6%B1%89%E5%8C%96%E6%A8%A1%E6%9D%BF)
+```js
+// .commitlintrc.js
+/** @type {import('cz-git').UserConfig} */
+module.exports = {
+  rule: {
+    ...
+  },
+  prompt: {
+    useEmoji: true
+    //option...
+  }
+}
+```
+
+## 网络请求与 Mock
+
+### 封装 Axios
+
+```bash
+pnpm add axios
+pnpm add nprogress @types/nprogress -D
+```
+
+```tsx
+import axios from 'axios';
+import type { AxiosInstance, CreateAxiosDefaults, InternalAxiosRequestConfig, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { reqeuestLog, responseLog, checkStatus, codeVerificationArray, AxiosCanceler, showFullScreenLoading, tryHideFullScreenLoading } from './helper';
+import FullLoading from '@/components/FullLoading';
+import { message } from 'antd';
+
+const axiosCanceler = new AxiosCanceler();
+
+/****** 进度条配置 *******/
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
+import { ResultData } from './types';
+NProgress.configure({
+  easing: 'ease', // 动画方式
+  speed: 500, // 递增进度条的速度
+  showSpinner: false, // 是否显示加载ico
+  trickleSpeed: 200, // 自动递增间隔
+  minimum: 0.3 // 初始化时的最小百分比
+});
+/****** 进度条配置 *******/
+
+class HttpRequst {
+  service: AxiosInstance;
+  constructor(config: CreateAxiosDefaults) {
+    // 实例化axios
+    this.service = axios.create(config);
+    /**
+     * @description: 请求拦截器
+     * 客户端发送请求 -> [请求拦截器] -> 服务器
+     * token校验(JWT) : 接受服务器返回的token,存储到redux/本地储存当中
+     */
+    this.service.interceptors.request.use(
+      (config: InternalAxiosRequestConfig) => {
+        // 1.开启进度条
+        NProgress.start();
+        // 2.将当前请求添加到 pendingMap 中
+        axiosCanceler.addPending(config);
+        // 3.是否展示全屏loading
+        showFullScreenLoading(<FullLoading />);
+        // 4.添加token
+        const token = localStorage.getItem('token');
+        if (token) config.headers['Authorization'] = `Bearer ${token}`;
+        reqeuestLog(config);
+        return config;
+      },
+      (error) => {
+        NProgress.done();
+        return Promise.reject(error);
+      }
+    );
+    /**
+     * @description: 响应拦截器
+     * 服务器换返回信息 -> [拦截统一处理] -> 客户端JS获取到信息
+     */
+    this.service.interceptors.response.use(
+      (response: AxiosResponse) => {
+        const { config } = response;
+        // 1.关闭进度条
+        NProgress.done();
+        // 2.请求结束移除本次请求
+        axiosCanceler.removePending(config);
+        // 3.关闭全屏loading
+        tryHideFullScreenLoading();
+        // 4.处理响应
+        return this.handleResponseData(response);
+      },
+      (error) => {
+        NProgress.done();
+        tryHideFullScreenLoading();
+        const { response } = error;
+        // 处理无返回错误
+        if (!response) {
+          //浏览器网络断开 - 跳转断网页面
+          if (!window.navigator.onLine) window.location.hash = '/500';
+          if (error.message.includes('timeout')) message.error('请求超时');
+          else message.error('连接后台接口失败');
+          return Promise.reject(error);
+        }
+        // 处理返回数据
+        if (response) return this.handleResponseData(response);
+      }
+    );
+  }
+  /**
+   * @description: 处理后台响应数据
+   */
+  handleResponseData(response: AxiosResponse) {
+    const { data, status } = response;
+    // 1.输出结果日志
+    responseLog(response);
+
+    // 2.使用返回数据覆盖code值
+    let code: number = data?.code || status;
+    if (codeVerificationArray.includes(code)) code = 200;
+
+    // 3.处理业务逻辑
+    switch (code) {
+      case 200:
+        // 正常业务逻辑
+        return data;
+      case 401:
+        // 登录过期
+        break;
+      case 403:
+        // 无权限
+        break;
+      default:
+        break;
+    }
+    // 4.处理异常数据
+    checkStatus(code, data?.msg);
+    return Promise.reject(data);
+  }
+  get<T>(url: string, config: AxiosRequestConfig): Promise<ResultData<T>> {
+    return this.service.get(url, config);
+  }
+  post<T, D = any>(url: string, data: D, config?: AxiosRequestConfig<D>): Promise<ResultData<T>> {
+    return this.service.post(url, data, config);
+  }
+  put<T, D = any>(url: string, data: D, config?: AxiosRequestConfig<D>): Promise<ResultData<T>> {
+    return this.service.put(url, data, config);
+  }
+  delete<T, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<ResultData<T>> {
+    return this.service.delete(url, config);
+  }
+}
+
+const config: AxiosRequestConfig = {
+  // 默认地址请求地址，可在 .env 开头文件中修改
+  // baseURL: import.meta.env.VITE_API_URL,
+  // 使用http-proxy处理跨域
+  baseURL: '',
+  // 设置超时时间（10s）
+  timeout: 10000,
+  // 跨域时候允许携带凭证
+  withCredentials: true,
+  headers: {
+    fullLoading: false
+  }
+};
+
+export default new HttpRequst(config);
+```
+
+### Axios 取消请求
+
+```ts
+import axios, { AxiosRequestConfig, Canceler } from 'axios';
+
+// 序列化参数
+const getPendingUrl = (config: AxiosRequestConfig): string => {
+  return [config.method, config.url, JSON.stringify(config.data), JSON.stringify(config.params)].join('&');
+};
+
+// 声明一个 Map 用于存储每个请求的标识 和 取消函数
+let pendingMap = new Map<string, Canceler>();
+
+export class AxiosCanceler {
+  /**
+   * @description: 添加请求
+   */
+  addPending(config: AxiosRequestConfig) {
+    // 请求前移除相同请求
+    this.removePending(config);
+    // 获取请求唯一key值
+    const url = getPendingUrl(config);
+    config.cancelToken =
+      config.cancelToken ||
+      new axios.CancelToken((cancel) => {
+        if (!pendingMap.has(url)) {
+          // 如果 pending 中不存在当前请求，则添加进去
+          pendingMap.set(url, cancel);
+        }
+      });
+  }
+  /**
+   * @description: 移除请求
+   */
+  removePending(config: AxiosRequestConfig) {
+    const url = getPendingUrl(config);
+    if (pendingMap.has(url)) {
+      // 如果在 pending 中存在当前请求标识，需要取消当前请求，并且移除
+      const cancel = pendingMap.get(url);
+      cancel && cancel();
+      pendingMap.delete(url);
+    }
+  }
+
+  /**
+   * @description: 清空所有pending
+   */
+  removeAllPending() {
+    pendingMap.forEach((cancel) => {
+      cancel && cancel();
+    });
+    pendingMap.clear();
+  }
+
+  /**
+   * @description: 重置
+   */
+  reset() {
+    pendingMap = new Map<string, Canceler>();
+  }
+}
+```
+
+### Mock 数据
+
+```bash
+pnpm add mockjs
+```
