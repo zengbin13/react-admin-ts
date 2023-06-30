@@ -36,7 +36,6 @@ class HttpRequst {
         // 2.将当前请求添加到 pendingMap 中
         axiosCanceler.addPending(config);
         // 3.是否展示全屏loading
-        console.log(config.headers, 'xx');
         config.headers.fullLoading && showFullScreenLoading(<FullLoading />);
         // 4.添加token
         const token = localStorage.getItem('token');
