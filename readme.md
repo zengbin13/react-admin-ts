@@ -610,17 +610,17 @@ pnpm add nprogress @types/nprogress -D
 
 ```tsx
 import axios from 'axios';
-import type { AxiosInstance, CreateAxiosDefaults, InternalAxiosRequestConfig, AxiosRequestConfig, AxiosResponse } from 'axios';
+import type { AxiosInstance, CreateAxiosDefaults, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 import { reqeuestLog, responseLog, checkStatus, codeVerificationArray, AxiosCanceler, showFullScreenLoading, tryHideFullScreenLoading } from './helper';
-import FullLoading from '@/components/FullLoading';
 import { message } from 'antd';
 
+import FullLoading from '@/components/FullLoading';
 const axiosCanceler = new AxiosCanceler();
+import type { ResultData, AxiosCustomRequestConfig } from './types';
 
 /****** 进度条配置 *******/
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
-import { ResultData } from './types';
 NProgress.configure({
   easing: 'ease', // 动画方式
   speed: 500, // 递增进度条的速度
@@ -647,7 +647,8 @@ class HttpRequst {
         // 2.将当前请求添加到 pendingMap 中
         axiosCanceler.addPending(config);
         // 3.是否展示全屏loading
-        showFullScreenLoading(<FullLoading />);
+        console.log(config.headers, 'xx');
+        config.headers.fullLoading && showFullScreenLoading(<FullLoading />);
         // 4.添加token
         const token = localStorage.getItem('token');
         if (token) config.headers['Authorization'] = `Bearer ${token}`;
@@ -719,24 +720,24 @@ class HttpRequst {
         break;
     }
     // 4.处理异常数据
-    checkStatus(code, data?.msg);
+    checkStatus(code, data?.message);
     return Promise.reject(data);
   }
-  get<T>(url: string, config: AxiosRequestConfig): Promise<ResultData<T>> {
+  get<T>(url: string, config?: AxiosCustomRequestConfig): Promise<ResultData<T>> {
     return this.service.get(url, config);
   }
-  post<T, D = any>(url: string, data: D, config?: AxiosRequestConfig<D>): Promise<ResultData<T>> {
+  post<T, D = any>(url: string, data: D, config?: AxiosCustomRequestConfig<D>): Promise<ResultData<T>> {
     return this.service.post(url, data, config);
   }
-  put<T, D = any>(url: string, data: D, config?: AxiosRequestConfig<D>): Promise<ResultData<T>> {
+  put<T, D = any>(url: string, data: D, config?: AxiosCustomRequestConfig<D>): Promise<ResultData<T>> {
     return this.service.put(url, data, config);
   }
-  delete<T, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<ResultData<T>> {
+  delete<T, D = any>(url: string, config?: AxiosCustomRequestConfig<D>): Promise<ResultData<T>> {
     return this.service.delete(url, config);
   }
 }
 
-const config: AxiosRequestConfig = {
+const config: AxiosCustomRequestConfig = {
   // 默认地址请求地址，可在 .env 开头文件中修改
   // baseURL: import.meta.env.VITE_API_URL,
   // 使用http-proxy处理跨域
@@ -820,4 +821,60 @@ export class AxiosCanceler {
 
 ```bash
 pnpm add mockjs
+pnpm add vite-plugin-mock@2.9.6 -D
+```
+
+```ts
+// vite.config.ts
+import { viteMockServe } from 'vite-plugin-mock';
+plugins: [
+    viteMockServe({
+      mockPath: 'mock',
+      enable: true
+    })
+],
+```
+
+```ts
+//mock/user.ts
+
+import type { MockMethod } from 'vite-plugin-mock';
+import { resultError, resultSuccess } from './_util';
+
+export default [
+  {
+    url: '/api/login',
+    method: 'post',
+    timeout: 2000,
+    response: ({ body }: { body: Record<string, string> }) => {
+      const { username, password } = body;
+      if (!username || username.length < 6) return resultError('账号格式不正常');
+      if (!password || password.length < 6) return resultError('密码不正常');
+      return resultSuccess({
+        token: 'HVeUSCHLl6mA__ohs1NvAEUOzGUuyrXEZxufw_S__WY'
+      });
+    }
+  }
+] as MockMethod[];
+```
+
+### 网络请求使用
+
+```ts
+import http from '@/apis/http/index';
+
+/**
+ * @description: 登录接口
+ */
+function loginApi(data: { username: string; password: string }) {
+  return http.post<{ token: string }>('/api/login', data, {
+    headers: {
+      fullLoading: true
+    }
+  });
+}
+
+export default {
+  loginApi
+};
 ```

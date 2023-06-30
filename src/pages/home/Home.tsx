@@ -1,13 +1,13 @@
 import { Button } from 'antd';
-import http from '@/apis/http/index';
+import apis from '@/apis';
 
 function Home() {
-  const handleClick = () => {
-    http.get('/test', {
-      params: {
-        a: 'xx'
-      }
+  const handleClick = async () => {
+    const res = await apis.loginApi({
+      username: 'xx',
+      password: 'xx'
     });
+    console.log(res);
   };
   return (
     <div>
