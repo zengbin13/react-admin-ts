@@ -29,17 +29,22 @@
       "@/*": [
         "src/*"
       ],
-      "@": [
-        "src"
-      ]
+      "#/*": [
+        "types/*"
+      ],
     },
+    //指定要包含而不在源文件中引用的类型包名称
+    "types": [
+      "vite/client"
+    ]
   },
   // 包含在编译中的文件
   "include": [
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.tsx",
-    "vite.config.ts"
+    "vite.config.ts",
+    "types/**/*.d.ts", // 添加全局声明文件的路径
   ],
   "references": [
     {

@@ -1,6 +1,5 @@
 import { ConfigProvider, theme } from 'antd';
-
-import Home from '@/pages/home/Home';
+import Router from '@/router/index';
 
 function App() {
   const { token } = theme.useToken();
@@ -13,7 +12,7 @@ function App() {
         algorithm: theme.defaultAlgorithm
       }}
     >
-      <Home />
+      <Router />
     </ConfigProvider>
   );
 }

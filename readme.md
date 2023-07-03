@@ -13,8 +13,8 @@ pnpm add @types/node -D
 
 #### 路径别名与解析
 
-```js
-// vite.config.js
+```ts
+// vite.config.ts
 resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -34,6 +34,38 @@ resolve: {
       ]
     }
 }
+```
+
+#### TS 类型的解析
+
+```ts
+// types/global.d.ts
+
+// 全局TS声明
+declare type Recordable<T = any> = Record<string, T>;
+```
+
+```json
+//tsconfig.json
+{
+  // 包含在编译中的文件
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "vite.config.ts",
+    "types/**/*.d.ts" // 添加全局声明文件的路径
+  ]
+}
+```
+
+```ts
+// vite.config.ts
+resolve: {
+    alias: {
+       '#': path.resolve(__dirname, './types')
+    },
+  },
 ```
 
 ### 样式初始化
@@ -876,4 +908,10 @@ function loginApi(data: { username: string; password: string }) {
 export default {
   loginApi
 };
+```
+
+## 路由管理
+
+```bash
+pnpm add react-router-dom
 ```

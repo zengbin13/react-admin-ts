@@ -12,13 +12,13 @@ export default defineConfig({
     react(),
     UnoCSS(),
     viteMockServe({
-      mockPath: 'mock',
-      enable: true
+      mockPath: 'mock'
     })
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
+      '@': path.resolve(__dirname, './src'),
+      '#': path.resolve(__dirname, './types')
     }
   }
   // server: {
