@@ -1,4 +1,4 @@
-import { RouteObject } from 'react-router-dom';
+import { DataRouteObject } from 'react-router-dom';
 
 export interface MateProps {
   key?: string;
@@ -8,6 +8,9 @@ export interface MateProps {
   icon?: React.ReactNode;
 }
 
-declare type RouteExtendObject = RouteObject & {
-  meta?: MateProps;
-};
+export interface ExtendedDataRouteObject extends DataRouteObject {
+  mate?: MateProps;
+  children?: ExtendedDataRouteObject[];
+}
+
+declare type ExtendedRouteObject = IndexRouteObject | NonIndexRouteObject | ExtendedDataRouteObject;

@@ -104,6 +104,13 @@ export default defineConfig({
 import 'virtual:uno.css';
 ```
 
+**修复@apply 警告问题** x
+
+```json
+// .vscode > settings.json
+"less.lint.unknownAtRules": "ignore"
+```
+
 #### 重置样式
 
 ```bash
@@ -115,6 +122,28 @@ pnpm add @unocss/reset
 import '@unocss/reset/tailwind-compat.css'
 // or normalize
 import '@unocss/reset/normalize.css'
+```
+
+#### 使用[@apply](https://unocss.dev/transformers/directives)
+
+```bash
+pnpm add -D @unocss/transformer-directives
+```
+
+```ts
+// uno.config.ts
+import { defineConfig } from 'unocss';
+import transformerDirectives from '@unocss/transformer-directives';
+
+export default defineConfig({
+  // ...
+  transformers: [transformerDirectives()]
+});
+```
+
+```json
+ // 修复@apply警告问题
+"less.lint.unknownAtRules": "ignore"
 ```
 
 #### 动态主题色 `antd `

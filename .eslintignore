@@ -14,3 +14,4 @@ dist
 .eslintrc.js
 *.config.js
 vite.config.ts
+/src/pages/login/components/CartoonFigureCanvas/index.html

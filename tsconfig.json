@@ -44,7 +44,7 @@
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "vite.config.ts",
-    "types/**/*.d.ts", // 添加全局声明文件的路径
+    "types/**/*.d.ts", "src/pages/login/components/CartoonFigureCanvas/index.jsx", // 添加全局声明文件的路径
   ],
   "references": [
     {
