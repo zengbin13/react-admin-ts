@@ -939,6 +939,50 @@ export default {
 };
 ```
 
+## 样式使用方案
+
+### CSS Modules
+
+```less
+// index.module.less
+.root {
+  // :global 包裹类名将不会被处理
+  @apply border flex-1 w-full mt-8;
+
+  :global {
+    // 修改组件默认样式
+    .ant-input {
+      background-color: transparent;
+    }
+
+    .login-form {
+      @apply max-w-[400px] mx-auto;
+    }
+  }
+}
+```
+
+```tsx
+import styles from './index.module.less';
+function App() {
+  return (
+    <div className={styles.root}>
+      <Form name="login" className="login-form">
+        {/* 样式动态化 */}
+        <Input style={{ backgroundColor: token.colorPrimaryBg }} placeholder="Username" />
+      </Form>
+    </div>
+  );
+}
+export default App;
+```
+
+### antd-style
+
+```
+
+```
+
 ## 路由管理
 
 ```bash

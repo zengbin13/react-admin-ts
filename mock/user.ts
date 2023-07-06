@@ -5,7 +5,7 @@ export default [
   {
     url: '/api/login',
     method: 'post',
-    timeout: 2000,
+    timeout: 1000,
     response: ({ body }: { body: Record<string, string> }) => {
       const { username, password } = body;
       if (!username || username.length < 6) return resultError('账号格式不正常');

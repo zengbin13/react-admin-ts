@@ -6,7 +6,7 @@ import http from '@/apis/http/index';
 function loginApi(data: { username: string; password: string }) {
   return http.post<{ token: string }>('/api/login', data, {
     headers: {
-      fullLoading: true
+      fullLoading: false
     }
   });
 }

@@ -1,0 +1,15 @@
+.root {
+  // :global 包裹类名将不会被处理
+  @apply flex-1 w-full mt-8;
+
+  :global {
+    // 修改组件默认样式
+    .ant-input {
+      background-color: transparent;
+    }
+
+    .login-form {
+      @apply max-w-[400px] mx-auto;
+    }
+  }
+}

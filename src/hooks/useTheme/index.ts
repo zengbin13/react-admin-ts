@@ -4,6 +4,7 @@ const { useToken } = theme;
 
 function useTheme() {
   const { token } = useToken();
+  console.log(token);
   return {
     token,
     colorPrimary: token.colorPrimary
