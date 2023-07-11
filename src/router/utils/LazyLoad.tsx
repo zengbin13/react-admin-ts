@@ -6,10 +6,9 @@ import { Spin } from 'antd';
  * @param {Element} Component 需要加载的组件
  * @returns element
  */
-
 function LazyLoad(Component: React.LazyExoticComponent<() => JSX.Element>) {
   return (
-    <Suspense fallback={<Spin size="large" />}>
+    <Suspense fallback={<Spin size="large" className="h-full flex-1 flex justify-center items-center" />}>
       <Component />
     </Suspense>
   );

@@ -11,6 +11,14 @@ function loginApi(data: { username: string; password: string }) {
   });
 }
 
+/**
+ * @description: 获取用户数据接口
+ */
+function getUserInfoApi() {
+  return http.get<{ username: string; auth: string[] }>('/api/fetchUser');
+}
+
 export default {
-  loginApi
+  loginApi,
+  getUserInfoApi
 };

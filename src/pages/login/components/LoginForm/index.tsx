@@ -5,18 +5,24 @@ import useTheme from '@/hooks/useTheme';
 import apis from '@/apis';
 import { useState } from 'react';
 import { LoadingOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
+import { HOME_URL } from '@/config';
 
 function LoginForm() {
   const [loading, setLoading] = useState(false);
   const { token } = useTheme();
+  const navigate = useNavigate();
+
   const onFinish = async (values: { username: string; password: string }) => {
     try {
+      // if (loading) return;
       setLoading(true);
       const { data } = await apis.user.loginApi(values);
-      console.log(data.token);
+      localStorage.setItem('token', data.token);
+      navigate(HOME_URL, { replace: true });
+      setLoading(false);
     } catch (error) {
       console.log(error);
-    } finally {
       setLoading(false);
     }
   };

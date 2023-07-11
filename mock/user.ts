@@ -14,5 +14,17 @@ export default [
         token: 'HVeUSCHLl6mA__ohs1NvAEUOzGUuyrXEZxufw_S__WY'
       });
     }
+  },
+  {
+    url: '/api/fetchUser',
+    method: 'get',
+    timeout: 1000,
+    response: ({ headers }: { headers: Record<string, string> }) => {
+      console.log(headers);
+      return resultSuccess({
+        username: 'xxxx',
+        auth: ['home']
+      });
+    }
   }
 ] as MockMethod[];

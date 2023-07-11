@@ -1,8 +1,9 @@
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import { lazy } from 'react';
-import LazyLoad from '@/router/utils/LazyLoad';
 import type { ExtendedRouteObject } from '#/router';
-import AuthRouter from '@/router/utils/AuthRouter';
+import apis from '@/apis';
+import LazyLoad from './utils/LazyLoad';
+import AuthRouter from './utils/AuthRouter';
 
 // 导入路由模块 - 有序
 import homeRoutes from './modules/home';
@@ -17,17 +18,32 @@ const routesList: ExtendedRouteObject[] = [...homeRoutes, ...errorRoutes];
 // });
 
 const Login = lazy(() => import('@/pages/login'));
+const rootLoader = async () => {
+  try {
+    const { data } = await apis.user.getUserInfoApi();
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};
 
-const routes: ExtendedRouteObject[] = [
+export const routes: ExtendedRouteObject[] = [
+  // 无需权限的路由
   {
     path: '/',
-    element: <Navigate to="/login" />
+    element: <Navigate to="/login"></Navigate>
   },
   {
     path: '/login',
     element: LazyLoad(Login)
   },
-  ...routesList,
+  // 请求后端用户权限路由
+  {
+    id: 'root',
+    loader: rootLoader,
+    element: <AuthRouter />,
+    children: [...routesList]
+  },
   {
     path: '*',
     element: <Navigate to="/404" />
@@ -37,10 +53,6 @@ const routes: ExtendedRouteObject[] = [
 export const router = createBrowserRouter(routes);
 
 // 箭头函数修复:JSX 元素类型不具有任何构造签名或调用签名
-const Router = () => (
-  <AuthRouter>
-    <RouterProvider router={router} />
-  </AuthRouter>
-);
+const Router = () => <RouterProvider router={router}></RouterProvider>;
 
 export default Router;

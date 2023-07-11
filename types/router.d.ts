@@ -1,16 +1,17 @@
-import { DataRouteObject } from 'react-router-dom';
+import { NonIndexRouteObject, IndexRouteObject } from 'react-router-dom';
 
-export interface MateProps {
+export interface MetaProps {
   key?: string;
   title?: string;
-  requiresAuth?: boolean;
+  auth?: string;
   hidden?: boolean;
   icon?: React.ReactNode;
 }
-
-export interface ExtendedDataRouteObject extends DataRouteObject {
-  mate?: MateProps;
-  children?: ExtendedDataRouteObject[];
+interface ExtendedNonIndexRouteObject extends NonIndexRouteObject {
+  children?: ExtendedRouteObject[];
+  meta?: MetaProps;
 }
-
-declare type ExtendedRouteObject = IndexRouteObject | NonIndexRouteObject | ExtendedDataRouteObject;
+interface ExtendedIndexRouteObject extends IndexRouteObject {
+  meta?: MetaProps;
+}
+declare type ExtendedRouteObject = ExtendedIndexRouteObject | ExtendedNonIndexRouteObject;

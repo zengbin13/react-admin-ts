@@ -1,11 +1,11 @@
 import { lazy } from 'react';
 import LazyLoad from '@/router/utils/LazyLoad';
-import { RouteExtendObject } from '#/router';
+import { ExtendedRouteObject } from '#/router';
 const Forbidden = lazy(() => import('@/components/ErrorMessage/403'));
 const NotFound = lazy(() => import('@/components/ErrorMessage/404'));
 const ServerError = lazy(() => import('@/components/ErrorMessage/500'));
 
-const errorRoutes: RouteExtendObject[] = [
+const errorRoutes: ExtendedRouteObject[] = [
   {
     path: '/403',
     element: LazyLoad(Forbidden),

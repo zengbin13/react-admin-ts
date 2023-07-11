@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Button, Result } from 'antd';
 import { HOME_URL } from '@/config';
-import './index.less';
+import Center from '@/components/Center';
 
 const NotNetwork = () => {
   const navigate = useNavigate();
@@ -9,16 +9,18 @@ const NotNetwork = () => {
     navigate(HOME_URL);
   };
   return (
-    <Result
-      status="500"
-      title="500"
-      subTitle="Sorry, something went wrong."
-      extra={
-        <Button type="primary" onClick={goHome}>
-          Back Home
-        </Button>
-      }
-    />
+    <Center>
+      <Result
+        status="500"
+        title="500"
+        subTitle="Sorry, something went wrong."
+        extra={
+          <Button type="primary" onClick={goHome}>
+            Back Home
+          </Button>
+        }
+      />
+    </Center>
   );
 };
 

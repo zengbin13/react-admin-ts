@@ -72,6 +72,8 @@ class HttpRequst {
         if (!response) {
           //浏览器网络断开 - 跳转断网页面
           if (!window.navigator.onLine) window.location.hash = '/500';
+          // 取消请求
+          if (error.message.includes('canceled')) return Promise.reject(error);
           if (error.message.includes('timeout')) message.error('请求超时');
           else message.error('连接后台接口失败');
           return Promise.reject(error);
