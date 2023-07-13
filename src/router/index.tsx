@@ -1,10 +1,9 @@
-import { createBrowserRouter, Navigate, RouterProvider, LoaderFunctionArgs } from 'react-router-dom';
+import { createBrowserRouter, Navigate, RouterProvider, defer } from 'react-router-dom';
 import { lazy } from 'react';
 import type { ExtendedRouteObject } from '#/router';
-import apis from '@/apis';
+
 import LazyLoad from './utils/LazyLoad';
-import AuthRouter from './utils/AuthRouter';
-import ErrorBoundary from './utils/ErrorBoundary';
+import AuthLayout, { getUserInfo } from './utils/AuthLayout';
 
 // 导入路由模块 - 有序
 import homeRoutes from './modules/home';
@@ -19,36 +18,23 @@ const routesList: ExtendedRouteObject[] = [...homeRoutes, ...errorRoutes];
 // });
 
 const Login = lazy(() => import('@/pages/login'));
-const rootLoader = async ({ request, params }: LoaderFunctionArgs) => {
-  try {
-    const { data } = await apis.user.getUserInfoApi();
-    return data;
-  } catch (error) {
-    console.error(error, request, params);
-    return null;
-  }
-};
 
 export const routes: ExtendedRouteObject[] = [
   {
     id: 'root',
-    // https://reactrouter.com/en/main/route/loader
-    loader: rootLoader,
-    element: <AuthRouter />,
-    errorElement: <ErrorBoundary />,
+    loader: () => defer({ userPromise: getUserInfo() }),
+    element: <AuthLayout />,
     children: [
       {
         path: '/',
         element: <Navigate to="/login" />
       },
-      // 请求后端用户权限路由
+      {
+        path: '/login',
+        element: LazyLoad(Login)
+      },
       ...routesList
     ]
-  },
-  // 避免登录跳转首页不加载loader数据 AuthRouter鉴权无法通过
-  {
-    path: '/login',
-    element: LazyLoad(Login)
   },
   {
     path: '*',

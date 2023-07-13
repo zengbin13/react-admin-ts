@@ -1,9 +1,16 @@
 import { Button } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
 function Home() {
+  const navigate = useNavigate();
+  const handleClick = () => {
+    navigate('/index2');
+  };
   return (
     <div>
-      <Button type="primary">按钮样式</Button>
+      <Button type="primary" onClick={() => handleClick()}>
+        跳转2
+      </Button>
     </div>
   );
 }

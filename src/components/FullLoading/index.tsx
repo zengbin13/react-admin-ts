@@ -1,10 +1,10 @@
 import { Spin } from 'antd';
 import styles from './index.module.less';
 
-function FullLoading({ tip = 'loading' }: { tip?: string }) {
+function FullLoading() {
   return (
     <div className={styles.root}>
-      <Spin tip={tip} size="large"></Spin>
+      <Spin size="large"></Spin>
     </div>
   );
 }

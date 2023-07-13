@@ -18,7 +18,7 @@ export default [
   {
     url: '/api/fetchUser',
     method: 'get',
-    timeout: 1000,
+    timeout: 3000,
     response: ({ headers }: { headers: Record<string, string> }) => {
       if (!headers.authorization) {
         return resultError('登录过期', { code: 401 });
