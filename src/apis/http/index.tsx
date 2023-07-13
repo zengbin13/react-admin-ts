@@ -2,6 +2,7 @@ import axios from 'axios';
 import type { AxiosInstance, CreateAxiosDefaults, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 import { reqeuestLog, responseLog, checkStatus, codeVerificationArray, AxiosCanceler, showFullScreenLoading, tryHideFullScreenLoading } from './helper';
 import { message } from 'antd';
+import { redirect } from 'react-router-dom';
 
 import FullLoading from '@/components/FullLoading';
 const axiosCanceler = new AxiosCanceler();
@@ -71,7 +72,7 @@ class HttpRequst {
         // 处理无返回错误
         if (!response) {
           //浏览器网络断开 - 跳转断网页面
-          if (!window.navigator.onLine) window.location.hash = '/500';
+          if (!window.navigator.onLine) redirect('/500');
           // 取消请求
           if (error.message.includes('canceled')) return Promise.reject(error);
           if (error.message.includes('timeout')) message.error('请求超时');
@@ -102,10 +103,14 @@ class HttpRequst {
         return data;
       case 401:
         // 登录过期
-        break;
+        localStorage.removeItem('token');
+        console.log('登录过期-401');
+        redirect('/login');
+        return Promise.reject(data);
       case 403:
         // 无权限
-        break;
+        // window.location.href = '/403';
+        return Promise.reject(data);
       default:
         break;
     }

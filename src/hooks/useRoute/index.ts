@@ -1,7 +1,9 @@
 import { useLocation, matchRoutes, useNavigate } from 'react-router-dom';
 import { routes } from '@/router/index';
 
-// 获取当前路由
+/**
+ * @description 获取当前路由
+ */
 export function useRoute() {
   const navigate = useNavigate();
   const { pathname } = useLocation();

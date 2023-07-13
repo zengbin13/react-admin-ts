@@ -983,8 +983,129 @@ export default App;
 
 ```
 
-## 路由管理
+## 路由管理 V6.4
+
+[🔗 参考链接 1](https://juejin.cn/post/7148102355945750564)
+
+[🔗 参考链接 2](https://zhuanlan.zhihu.com/p/617617455)
+
+[🔗 参考链接 3](https://juejin.cn/post/7242677017034915899#heading-11)
+
+[🔗 参考链接 4](https://github.com/HalseySpicy/Hooks-Admin/blob/master/src/routers/utils/authRouter.tsx)
 
 ```bash
 pnpm add react-router-dom
+```
+
+### 路由组件
+
+```tsx
+import { createBrowserRouter, Navigate, RouterProvider, LoaderFunctionArgs } from 'react-router-dom';
+import { lazy } from 'react';
+import type { ExtendedRouteObject } from '#/router';
+import apis from '@/apis';
+import LazyLoad from './utils/LazyLoad';
+import AuthRouter from './utils/AuthRouter';
+import ErrorBoundary from './utils/ErrorBoundary';
+
+// 导入路由模块 - 有序
+import homeRoutes from './modules/home';
+import errorRoutes from './modules/error';
+const routesList: ExtendedRouteObject[] = [...homeRoutes, ...errorRoutes];
+
+// 导入路由模块 - 无序
+// const routesList: ExtendedRouteObject[] = [];
+// const modules = import.meta.glob('./modules/*.{tsx,ts}', { eager: true });
+// Object.values(modules).forEach((item) => {
+//   routesList.push(...(item as { default: Array<ExtendedRouteObject> }).default);
+// });
+
+const Login = lazy(() => import('@/pages/login'));
+const rootLoader = async ({ request, params }: LoaderFunctionArgs) => {
+  try {
+    const { data } = await apis.user.getUserInfoApi();
+    return data;
+  } catch (error) {
+    console.error(error, request, params);
+    return null;
+  }
+};
+
+export const routes: ExtendedRouteObject[] = [
+  {
+    id: 'root',
+    // https://reactrouter.com/en/main/route/loader
+    loader: rootLoader,
+    element: <AuthRouter />,
+    errorElement: <ErrorBoundary />,
+    children: [
+      {
+        path: '/',
+        element: <Navigate to="/login" />
+      },
+      // 请求后端用户权限路由
+      ...routesList
+    ]
+  },
+  // 避免登录跳转首页不加载loader数据 AuthRouter鉴权无法通过
+  {
+    path: '/login',
+    element: LazyLoad(Login)
+  },
+  {
+    path: '*',
+    element: <Navigate to="/404" />
+  }
+];
+
+export const router = createBrowserRouter(routes);
+
+// 箭头函数修复:JSX 元素类型不具有任何构造签名或调用签名
+const Router = () => <RouterProvider router={router}></RouterProvider>;
+
+export default Router;
+```
+
+#### 路由对象
+
+```ts
+import { NonIndexRouteObject, IndexRouteObject } from 'react-router-dom';
+
+export interface MetaProps {
+  key?: string;
+  title?: string;
+  auth?: string;
+  hidden?: boolean;
+  icon?: React.ReactNode;
+}
+interface ExtendedNonIndexRouteObject extends NonIndexRouteObject {
+  children?: ExtendedRouteObject[];
+  meta?: MetaProps;
+}
+interface ExtendedIndexRouteObject extends IndexRouteObject {
+  meta?: MetaProps;
+}
+declare type ExtendedRouteObject = ExtendedIndexRouteObject | ExtendedNonIndexRouteObject;
+```
+
+### 路由懒加载
+
+```tsx
+/**
+ * @description 路由懒加载
+ * @param {Element} Component 需要加载的组件
+ * @returns element
+ */
+function LazyLoad(Component: React.LazyExoticComponent<() => JSX.Element>) {
+  return (
+    <Suspense fallback={<Spin size="large" className="h-full flex-1 flex justify-center items-center" />}>
+      <Component />
+    </Suspense>
+  );
+}
+
+...
+
+// 需要在模块顶层使用
+const NotFound = lazy(() => import('@/components/ErrorMessage/404'));
 ```

@@ -15,7 +15,8 @@ const errorRoutes: ExtendedRouteObject[] = [
         path: 'index',
         element: LazyLoad(Home),
         meta: {
-          title: '首页-2'
+          title: '首页-2',
+          auth: 'admin'
         }
       }
     ]

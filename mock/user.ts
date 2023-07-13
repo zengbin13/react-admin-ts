@@ -20,10 +20,12 @@ export default [
     method: 'get',
     timeout: 1000,
     response: ({ headers }: { headers: Record<string, string> }) => {
-      console.log(headers);
+      if (!headers.authorization) {
+        return resultError('登录过期', { code: 401 });
+      }
       return resultSuccess({
-        username: 'xxxx',
-        auth: ['home']
+        username: '可爱多',
+        auth: ['admin']
       });
     }
   }
