@@ -997,7 +997,28 @@ export default App;
 pnpm add react-router-dom
 ```
 
-### 路由组件
+### 当前路由
+
+```ts
+import { useLocation, matchRoutes, useNavigate } from 'react-router-dom';
+import { routes } from '@/router/index';
+
+/**
+ * @description 获取当前路由
+ */
+export function useRoute() {
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const match = matchRoutes(routes, pathname);
+  if (!match) {
+    navigate('/404');
+    return;
+  }
+  return match[match.length - 1].route;
+}
+```
+
+### 路由组件 - 方式 1
 
 ```tsx
 import { createBrowserRouter, Navigate, RouterProvider, LoaderFunctionArgs } from 'react-router-dom';
@@ -1137,23 +1158,116 @@ function AuthRouter() {
 }
 ```
 
-#### 获取当前路由
+### 路由组件 - 方式 2
 
-```ts
-import { useLocation, matchRoutes, useNavigate } from 'react-router-dom';
-import { routes } from '@/router/index';
+```tsx
+import { createBrowserRouter, Navigate, RouterProvider, defer } from 'react-router-dom';
+import { lazy } from 'react';
+import type { ExtendedRouteObject } from '#/router';
 
-/**
- * @description 获取当前路由
- */
-export function useRoute() {
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
-  const match = matchRoutes(routes, pathname);
-  if (!match) {
-    navigate('/404');
-    return;
+import LazyLoad from './utils/LazyLoad';
+import AuthLayout, { getUserInfo } from './utils/AuthLayout';
+
+// 导入路由模块 - 有序
+import homeRoutes from './modules/home';
+import errorRoutes from './modules/error';
+const routesList: ExtendedRouteObject[] = [...homeRoutes, ...errorRoutes];
+
+const Login = lazy(() => import('@/pages/login'));
+
+export const routes: ExtendedRouteObject[] = [
+  {
+    id: 'root',
+    loader: () => defer({ userPromise: getUserInfo() }),
+    element: <AuthLayout />,
+    children: [
+      {
+        path: '/',
+        element: <Navigate to="/login" />
+      },
+      {
+        path: '/login',
+        element: LazyLoad(Login)
+      },
+      ...routesList
+    ]
+  },
+  {
+    path: '*',
+    element: <Navigate to="/404" />
   }
-  return match[match.length - 1].route;
-}
+];
+
+export const router = createBrowserRouter(routes);
+
+// 箭头函数修复:JSX 元素类型不具有任何构造签名或调用签名
+const Router = () => <RouterProvider router={router}></RouterProvider>;
+
+export default Router;
 ```
+
+### 路由权限守卫
+
+```tsx
+import apis from '@/apis';
+import FullLoading from '@/components/FullLoading';
+import { UserInfo } from '@/interface/user';
+import { Suspense } from 'react';
+import { Await, useLoaderData, Outlet, useLocation, Navigate } from 'react-router-dom';
+import { useRoute } from '@/hooks/useRoute';
+import { HOME_URL } from '@/config';
+
+export const goHomePage = () => (window.location.href = HOME_URL);
+
+export const getUserInfo = async () => {
+  try {
+    const { data } = await apis.user.getUserInfoApi();
+    return Promise.resolve(data);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+function AuthLayout() {
+  const route = useRoute();
+  const { pathname } = useLocation();
+
+  console.log(`跳转路由:${pathname} - 匹配路由:`, route);
+
+  // 获取延迟的用户信息
+  const { userPromise } = useLoaderData() as {
+    userPromise: () => Promise<UserInfo>;
+  };
+
+  // 当前路由是否需要权限
+  const auth = route?.meta?.auth;
+
+  /**
+   * errorElement: 作为获取用户信息失败的显示
+   * 当前路由需权限: 显示登录页
+   * 当前路由无需权限: 放行显示自身
+   */
+  let errorElement = <Navigate to="/login" />;
+  if (!auth) errorElement = <Outlet />;
+
+  return (
+    <Suspense fallback={<FullLoading />}>
+      {/* errorElement 获取用户信息失败显示登录页面 */}
+      <Await resolve={userPromise} errorElement={errorElement}>
+        {(user: UserInfo) => {
+          // 具备用户信息在登陆页面跳转首页
+          if (user && pathname == '/login') return <Navigate to={HOME_URL} />;
+          // 用户具备的权限
+          const authList = user.auth;
+          if (!auth || authList.includes(auth)) return <Outlet />;
+          return <Navigate to="/403" replace />;
+        }}
+      </Await>
+    </Suspense>
+  );
+}
+
+export default AuthLayout;
+```
+
+**注意：登录页跳转时不会触发 loader 导致用户数据为空不能跳转 可使用 `goHomePage`**
