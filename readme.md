@@ -1088,7 +1088,7 @@ interface ExtendedIndexRouteObject extends IndexRouteObject {
 declare type ExtendedRouteObject = ExtendedIndexRouteObject | ExtendedNonIndexRouteObject;
 ```
 
-### 路由懒加载
+### [路由懒加载](https://react.docschina.org/reference/react/lazy#lazy)
 
 ```tsx
 /**
@@ -1108,4 +1108,52 @@ function LazyLoad(Component: React.LazyExoticComponent<() => JSX.Element>) {
 
 // 需要在模块顶层使用
 const NotFound = lazy(() => import('@/components/ErrorMessage/404'));
+```
+
+### 路由权限守卫
+
+```tsx
+/**
+ * @description 路由权限守卫
+ */
+function AuthRouter() {
+  const outlet = useOutlet();
+  const { pathname } = useLocation();
+  const userInfo = useRouteLoaderData('root') as UserInfo | undefined;
+  const route = useRoute();
+  const token = localStorage.getItem('token');
+
+  // 当前路由无需权限放行
+  if (!route?.meta?.auth) return outlet;
+  // 需要权限 并且 token或用户信息不存在存在
+  if (!token || !userInfo) return <Navigate to="/login" />;
+  // token/用户信息存在
+  const auth = route.meta.auth;
+  const authList = userInfo.auth;
+  // 具有权限正常访问
+  if (authList.includes(auth)) return outlet;
+  // 无权限重定向403
+  else return <Navigate to="/403" />;
+}
+```
+
+#### 获取当前路由
+
+```ts
+import { useLocation, matchRoutes, useNavigate } from 'react-router-dom';
+import { routes } from '@/router/index';
+
+/**
+ * @description 获取当前路由
+ */
+export function useRoute() {
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const match = matchRoutes(routes, pathname);
+  if (!match) {
+    navigate('/404');
+    return;
+  }
+  return match[match.length - 1].route;
+}
 ```
